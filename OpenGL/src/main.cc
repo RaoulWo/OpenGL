@@ -6,6 +6,25 @@
 #include <sstream>
 #include <string>
 
+#define ASSERT(x) if (!(x)) __debugbreak();
+#define CallGl(x) ClearGlError();\
+  x;\
+  ASSERT(LogGlCall(#x, __FILE__, __LINE__))
+
+static void ClearGlError() {
+  while (glGetError() != GL_NO_ERROR) {
+
+  }
+}
+
+static bool LogGlCall(const char* function, const char* file, int line) {
+  while (GLenum error = glGetError()) {
+    std::cout << "[OpenGL Error] (" << error << "): " << function << " " << file << ":" << line << std::endl;
+    return false;
+  }
+  return true;
+}
+
 struct ShaderProgramSource {
   std::string vertex_source;
   std::string fragment_source;
@@ -138,7 +157,7 @@ int main(void) {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    CallGl(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
