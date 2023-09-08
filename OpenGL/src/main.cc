@@ -1,10 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <fstream>
 #include <iostream>
-#include <sstream>
-#include <string>
 
 #include "renderer.h"
 #include "shader.h"
