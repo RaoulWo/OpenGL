@@ -158,6 +158,7 @@
     <ClCompile Include="src\index_buffer.cc" />
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\renderer.cc" />
+    <ClCompile Include="src\shader.cc" />
     <ClCompile Include="src\vertex_array.cc" />
     <ClCompile Include="src\vertex_buffer.cc" />
     <ClCompile Include="src\vertex_buffer_layout.cc" />
@@ -168,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="src\index_buffer.h" />
     <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\vertex_array.h" />
     <ClInclude Include="src\vertex_buffer.h" />
     <ClInclude Include="src\vertex_buffer_layout.h" />
