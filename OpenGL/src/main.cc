@@ -6,24 +6,10 @@
 #include <sstream>
 #include <string>
 
-#define ASSERT(x) if (!(x)) __debugbreak();
-#define CallGl(x) ClearGlError();\
-  x;\
-  ASSERT(LogGlCall(#x, __FILE__, __LINE__))
+#include "renderer.h"
 
-static void ClearGlError() {
-  while (glGetError() != GL_NO_ERROR) {
-
-  }
-}
-
-static bool LogGlCall(const char* function, const char* file, int line) {
-  while (GLenum error = glGetError()) {
-    std::cout << "[OpenGL Error] (" << error << "): " << function << " " << file << ":" << line << std::endl;
-    return false;
-  }
-  return true;
-}
+#include "index_buffer.h"
+#include "vertex_buffer.h"
 
 struct ShaderProgramSource {
   std::string vertex_source;
@@ -140,19 +126,13 @@ int main(void) {
   CallGl(glBindVertexArray(vertexArrayObject));
   
   // Create vertex buffer
-  unsigned int buffer;
-  CallGl(glGenBuffers(1, &buffer));
-  CallGl(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-  CallGl(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
+  VertexBuffer* vertexBuffer = new VertexBuffer(positions, 4 * 2 * sizeof(float));
 
   CallGl(glEnableVertexAttribArray(0));
   CallGl(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
 
   // Create index buffer
-  unsigned int indexBufferObject;
-  CallGl(glGenBuffers(1, &indexBufferObject));
-  CallGl(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject));
-  CallGl(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
+  IndexBuffer* indexBuffer = new IndexBuffer(indices, 6);
 
   ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
   unsigned int shader = CreateShader(source.vertex_source, source.fragment_source);
@@ -196,6 +176,9 @@ int main(void) {
   }
 
   CallGl(glDeleteProgram(shader));
+
+  delete vertexBuffer;
+  delete indexBuffer;
 
   glfwTerminate();
   return 0;
