@@ -139,7 +139,7 @@ int main(void) {
   unsigned int buffer;
   CallGl(glGenBuffers(1, &buffer));
   CallGl(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-  CallGl(glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
+  CallGl(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
 
   CallGl(glEnableVertexAttribArray(0));
   CallGl(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
