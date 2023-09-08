@@ -134,6 +134,10 @@ int main(void) {
     0, 1, 2,
     2, 3, 0
   };
+
+  unsigned int vertexArrayObject;
+  CallGl(glGenVertexArrays(1, &vertexArrayObject));
+  CallGl(glBindVertexArray(vertexArrayObject));
   
   // Create vertex buffer
   unsigned int buffer;
@@ -158,6 +162,12 @@ int main(void) {
   ASSERT(location != -1);
   CallGl(glUniform4f(location, 0.8f, 0.3f, 0.8f, 1.0f));
 
+  CallGl(glBindVertexArray(0));
+  CallGl(glUseProgram(0));
+  CallGl(glBindBuffer(GL_ARRAY_BUFFER, 0));
+  CallGl(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
+
   float red = 0.0f;
   float increment = 0.05f;
   /* Loop until the user closes the window */
@@ -165,7 +175,10 @@ int main(void) {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
 
+    CallGl(glUseProgram(shader));
     CallGl(glUniform4f(location, red, 0.3f, 0.8f, 1.0f));
+
+    CallGl(glBindVertexArray(vertexArrayObject));
     CallGl(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
     if (red > 1.0f)
