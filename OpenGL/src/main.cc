@@ -8,6 +8,7 @@
 
 #include "renderer.h"
 
+#include "vertex_array.h"
 #include "index_buffer.h"
 #include "vertex_buffer.h"
 
@@ -121,15 +122,12 @@ int main(void) {
     2, 3, 0
   };
 
-  unsigned int vertexArrayObject;
-  CallGl(glGenVertexArrays(1, &vertexArrayObject));
-  CallGl(glBindVertexArray(vertexArrayObject));
-  
-  // Create vertex buffer
   VertexBuffer* vertexBuffer = new VertexBuffer(positions, 4 * 2 * sizeof(float));
+  VertexBufferLayout layout;
+  layout.Push<float>(2);
 
-  CallGl(glEnableVertexAttribArray(0));
-  CallGl(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
+  VertexArray vertexArray;
+  vertexArray.AddBuffer(*vertexBuffer, layout);
 
   // Create index buffer
   IndexBuffer* indexBuffer = new IndexBuffer(indices, 6);
@@ -158,7 +156,7 @@ int main(void) {
     CallGl(glUseProgram(shader));
     CallGl(glUniform4f(location, red, 0.3f, 0.8f, 1.0f));
 
-    CallGl(glBindVertexArray(vertexArrayObject));
+    vertexArray.Bind();
     CallGl(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
     if (red > 1.0f)
