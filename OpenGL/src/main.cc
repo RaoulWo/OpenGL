@@ -8,6 +8,7 @@
 #include "vertex_array.h"
 #include "index_buffer.h"
 #include "vertex_buffer.h"
+#include "vertex_buffer_layout.h"
 
 int main(void) {
   GLFWwindow* window;
@@ -67,19 +68,20 @@ int main(void) {
     vertexBuffer.Unbind();
     indexBuffer.Unbind();
 
+    Renderer renderer;
+
 
     float red = 0.0f;
     float increment = 0.05f;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
       /* Render here */
-      glClear(GL_COLOR_BUFFER_BIT);
+      renderer.Clear();
 
       shader.Bind();
       shader.SetUniform4f("u_color", red, 0.3f, 0.8f, 1.0f);
 
-      vertexArray.Bind();
-      CallGl(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+      renderer.Draw(vertexArray, indexBuffer, shader);
 
       if (red > 1.0f)
         increment = -0.05f;
