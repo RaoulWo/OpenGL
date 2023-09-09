@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "renderer.h"
+#include "texture.h"
 #include "shader.h"
 #include "vertex_array.h"
 #include "index_buffer.h"
@@ -35,11 +36,11 @@ int main(void) {
   std::cout << glGetString(GL_VERSION) << std::endl;
 
   const float positions[] = {
-    //  X,     Y, 
-    -0.5f, -0.5f, // 0
-     0.5f, -0.5f, // 1
-     0.5f,  0.5f, // 2
-    -0.5f,  0.5f  // 3
+    //  X,     Y, texX, texY,
+    -0.5f, -0.5f, 0.0f, 0.0f,  // 0
+     0.5f, -0.5f, 1.0f, 0.0f,  // 1
+     0.5f,  0.5f, 1.0f, 1.0f,  // 2
+    -0.5f,  0.5f, 0.0f, 1.0f   // 3
   };
 
   unsigned int indices[] = {
@@ -48,12 +49,12 @@ int main(void) {
   };
 
   {
-
-    VertexBuffer vertexBuffer(positions, 4 * 2 * sizeof(float));
+    VertexArray vertexArray;
+    VertexBuffer vertexBuffer(positions, 4 * 4 * sizeof(float));
     VertexBufferLayout layout;
     layout.Push<float>(2);
+    layout.Push<float>(2);
 
-    VertexArray vertexArray;
     vertexArray.AddBuffer(vertexBuffer, layout);
 
     // Create index buffer
@@ -61,7 +62,10 @@ int main(void) {
 
     Shader shader("res/shaders/basic.shader");
     shader.Bind();
-    shader.SetUniform4f("u_color", 0.8f, 0.3f, 0.8f, 1.0f);
+
+    Texture texture("res/textures/ChernoLogo.png");
+    texture.Bind();
+    shader.SetUniform1i("u_tex", 0);
 
     vertexArray.Unbind();
     shader.Unbind();
@@ -70,25 +74,14 @@ int main(void) {
 
     Renderer renderer;
 
-
-    float red = 0.0f;
-    float increment = 0.05f;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
       /* Render here */
       renderer.Clear();
 
       shader.Bind();
-      shader.SetUniform4f("u_color", red, 0.3f, 0.8f, 1.0f);
 
       renderer.Draw(vertexArray, indexBuffer, shader);
-
-      if (red > 1.0f)
-        increment = -0.05f;
-      else if (red < 0.0f)
-        increment = 0.05f;
-
-      red += increment;
 
       /* Swap front and back buffers */
       glfwSwapBuffers(window);
