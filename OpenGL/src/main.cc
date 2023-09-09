@@ -49,6 +49,9 @@ int main(void) {
   };
 
   {
+    CallGl(glEnable(GL_BLEND));
+    CallGl(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
     VertexArray vertexArray;
     VertexBuffer vertexBuffer(positions, 4 * 4 * sizeof(float));
     VertexBufferLayout layout;
@@ -63,7 +66,7 @@ int main(void) {
     Shader shader("res/shaders/basic.shader");
     shader.Bind();
 
-    Texture texture("res/textures/ChernoLogo.png");
+    Texture texture("res/textures/settings.png");
     texture.Bind();
     shader.SetUniform1i("u_tex", 0);
 
