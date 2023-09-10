@@ -67,10 +67,15 @@ int main(void) {
     IndexBuffer indexBuffer(indices, 6);
 
     glm::mat4 projectionMatrix = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(200, 200, 0));
 
+    // Reverse order because OpenGL expects matrices in column-major layout
+    glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * modelMatrix;
+    
     Shader shader("res/shaders/basic.shader");
     shader.Bind();
-    shader.SetUniformMat4f("u_model_view_proj_matrix", projectionMatrix);
+    shader.SetUniformMat4f("u_model_view_proj_matrix", modelViewProjectionMatrix);
 
     Texture texture("res/textures/settings.png");
     texture.Bind();
