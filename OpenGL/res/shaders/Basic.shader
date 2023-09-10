@@ -6,8 +6,10 @@ layout(location = 1) in vec2 tex_coord;
 
 out vec2 v_tex_coord;
 
+uniform mat4 u_model_view_proj_matrix;
+
 void main() {
-  gl_Position = position;
+  gl_Position = u_model_view_proj_matrix * position;
   v_tex_coord = tex_coord;
 }
 

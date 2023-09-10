@@ -11,6 +11,9 @@
 #include "vertex_buffer.h"
 #include "vertex_buffer_layout.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void) {
   GLFWwindow* window;
 
@@ -63,8 +66,11 @@ int main(void) {
     // Create index buffer
     IndexBuffer indexBuffer(indices, 6);
 
+    glm::mat4 projectionMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
     Shader shader("res/shaders/basic.shader");
     shader.Bind();
+    shader.SetUniformMat4f("u_model_view_proj_matrix", projectionMatrix);
 
     Texture texture("res/textures/settings.png");
     texture.Bind();
