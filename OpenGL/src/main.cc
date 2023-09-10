@@ -3,22 +3,13 @@
 
 #include <iostream>
 
-#include "renderer.h"
-#include "texture.h"
-#include "shader.h"
-#include "vertex_array.h"
-#include "index_buffer.h"
-#include "vertex_buffer.h"
-#include "vertex_buffer_layout.h"
-
-#include "tests/test_clear_color.h"
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+
+#include "renderer.h"
+#include "tests/test_clear_color.h"
+#include "tests/test_texture.h"
 
 int main(void) {
   GLFWwindow* window;
@@ -65,6 +56,7 @@ int main(void) {
     Test::TestClearColor test;
 
     menu->RegisterTest<Test::TestClearColor>("Clear Color");
+    menu->RegisterTest<Test::TestTexture>("Texture");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
