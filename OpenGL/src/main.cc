@@ -44,10 +44,10 @@ int main(void) {
 
   const float positions[] = {
     //   X,      Y, texX, texY,
-    100.0f, 100.0f, 0.0f, 0.0f,  // 0
-    200.0f, 100.0f, 1.0f, 0.0f,  // 1
-    200.0f, 200.0f, 1.0f, 1.0f,  // 2
-    100.0f, 200.0f, 0.0f, 1.0f   // 3
+    -50.0f, -50.0f, 0.0f, 0.0f,  // 0
+     50.0f, -50.0f, 1.0f, 0.0f,  // 1
+     50.0f,  50.0f, 1.0f, 1.0f,  // 2
+    -50.0f,  50.0f, 0.0f, 1.0f   // 3
   };
 
   unsigned int indices[] = {
@@ -71,7 +71,7 @@ int main(void) {
     IndexBuffer indexBuffer(indices, 6);
 
     glm::mat4 projectionMatrix = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
     
     Shader shader("res/shaders/basic.shader");
@@ -95,7 +95,8 @@ int main(void) {
     ImGui_ImplOpenGL3_Init("#version 330");
     ImGui::StyleColorsDark();
 
-    glm::vec3 translation(200, 200, 0);
+    glm::vec3 translation1(200, 200, 0);
+    glm::vec3 translation2(400, 200, 0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
@@ -106,18 +107,28 @@ int main(void) {
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
 
-      glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), translation);
-      // Reverse order because OpenGL expects matrices in column-major layout
-      glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * modelMatrix;
+      {
+        glm::mat4 modelMatrix1 = glm::translate(glm::mat4(1.0f), translation1);
+        // Reverse order because OpenGL expects matrices in column-major layout
+        glm::mat4 modelViewProjectionMatrix1 = projectionMatrix * viewMatrix * modelMatrix1;
+        shader.Bind();
+        shader.SetUniformMat4f("u_model_view_proj_matrix", modelViewProjectionMatrix1);
+        renderer.Draw(vertexArray, indexBuffer, shader);
+      }
 
-      shader.Bind();
-      shader.SetUniformMat4f("u_model_view_proj_matrix", modelViewProjectionMatrix);
-
-      renderer.Draw(vertexArray, indexBuffer, shader);
+      {
+        glm::mat4 modelMatrix2 = glm::translate(glm::mat4(1.0f), translation2);
+        // Reverse order because OpenGL expects matrices in column-major layout
+        glm::mat4 modelViewProjectionMatrix2 = projectionMatrix * viewMatrix * modelMatrix2;
+        shader.Bind();
+        shader.SetUniformMat4f("u_model_view_proj_matrix", modelViewProjectionMatrix2);
+        renderer.Draw(vertexArray, indexBuffer, shader);
+      }
 
       // ImGui window
       {
-        ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+        ImGui::SliderFloat3("Translation A", &translation1.x, 0.0f, 960.0f);
+        ImGui::SliderFloat3("Translation B", &translation2.x, 0.0f, 960.0f);
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
       }
 
