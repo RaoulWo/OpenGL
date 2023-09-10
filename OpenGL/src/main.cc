@@ -14,6 +14,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 int main(void) {
   GLFWwindow* window;
 
@@ -68,14 +72,10 @@ int main(void) {
 
     glm::mat4 projectionMatrix = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
     glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(200, 200, 0));
 
-    // Reverse order because OpenGL expects matrices in column-major layout
-    glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * modelMatrix;
     
     Shader shader("res/shaders/basic.shader");
     shader.Bind();
-    shader.SetUniformMat4f("u_model_view_proj_matrix", modelViewProjectionMatrix);
 
     Texture texture("res/textures/settings.png");
     texture.Bind();
@@ -88,14 +88,41 @@ int main(void) {
 
     Renderer renderer;
 
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui::StyleColorsDark();
+
+    glm::vec3 translation(200, 200, 0);
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
       /* Render here */
       renderer.Clear();
 
+      ImGui_ImplOpenGL3_NewFrame();
+      ImGui_ImplGlfw_NewFrame();
+      ImGui::NewFrame();
+
+      glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), translation);
+      // Reverse order because OpenGL expects matrices in column-major layout
+      glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * modelMatrix;
+
       shader.Bind();
+      shader.SetUniformMat4f("u_model_view_proj_matrix", modelViewProjectionMatrix);
 
       renderer.Draw(vertexArray, indexBuffer, shader);
+
+      // ImGui window
+      {
+        ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+      }
+
+      ImGui::Render();
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
       /* Swap front and back buffers */
       glfwSwapBuffers(window);
@@ -105,6 +132,10 @@ int main(void) {
     }
 
   }
+
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
 
   glfwTerminate();
   return 0;
